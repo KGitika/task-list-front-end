@@ -62,14 +62,16 @@ const App = () => {
       .catch(error => {console.log('can not delete task', error)});
   };
 
-  // toggle complete
+  // toggle complete by id
   const toggleCompleteness = (taskId) => {
     const taskToUpdate = tasks.find(task => task.id === taskId);
+    // console.log('We are in toggleCompleteness inside App component', taskToUpdate);
     if (!taskToUpdate) {
       return;
     }
     // choose endpoint depending on current state
     const endPoint = !taskToUpdate.is_complete ? 'mark_complete' : 'mark_incomplete';
+    // console.log('Our endpoint then is:', endPoint);
     toggleCompleteViaApi(taskId, endPoint)
       .then(() => {
         return getTasksViaApi();
