@@ -54,7 +54,7 @@ const App = () => {
   // };
 
   const deleteTask = (id) => {
-    axios.delete(`${kBaseURL}/${id}`)
+    axios.delete(`${kBaseURL}/tasks/${id}`)
       .then(() => {
         const filteredTasks = tasks.filter((task) => task.id !== id);
         setTasks(filteredTasks);
