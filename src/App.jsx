@@ -1,16 +1,17 @@
 import TaskList from './components/TaskList.jsx';
+import NewTaskForm from './components/NewTaskForm.jsx';
 import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const kBaseURL='http://127.0.0.1:5000/tasks';
 
-const kBaseURL='http://127.0.0.1:5000';
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    axios.get(`${kBaseURL}/tasks`)
+    axios.get(kBaseURL)
       .then((response) => {
         setTasks(response.data);
       })
@@ -32,8 +33,8 @@ const App = () => {
 
   const toggleTaskComplete = (id, isComplete) => {
     const endpoint = isComplete
-      ? `/tasks/${id}/mark_incomplete`
-      : `/tasks/${id}/mark_complete`;
+      ? `/${id}/mark_incomplete`
+      : `/${id}/mark_complete`;
 
     axios.patch(`${kBaseURL}${endpoint}`)
       .then(() => {
@@ -54,7 +55,7 @@ const App = () => {
   // };
 
   const deleteTask = (id) => {
-    axios.delete(`${kBaseURL}/tasks/${id}`)
+    axios.delete(`${kBaseURL}/${id}`)
       .then(() => {
         const filteredTasks = tasks.filter((task) => task.id !== id);
         setTasks(filteredTasks);
@@ -62,6 +63,18 @@ const App = () => {
       .catch((error) => {
         console.error('Error to deleting task:', error);
       });
+  };
+
+  const addTask = (taskData) => {
+    axios
+      .post(kBaseURL, taskData)
+      .then((response) => {
+        console.log('RESPONSE FROM BACKEND:', response.data);
+        const newTask = response.data.task;
+        const newTasks = [...tasks, newTask];
+        setTasks(newTasks);
+      })
+      .catch((error) => console.log(error));
   };
 
 
@@ -77,6 +90,7 @@ const App = () => {
             onToggleComplete={toggleTaskComplete}
             onDeleteTask={deleteTask}
           />}
+          <NewTaskForm addTaskCallback={addTask}></NewTaskForm>
         </div>
       </main>
     </div>
