@@ -1,4 +1,5 @@
 import TaskList from './components/TaskList.jsx';
+import NewTaskForm from './components/NewTaskForm.jsx';
 import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -38,7 +39,7 @@ const App = () => {
     axios.patch(`${kBaseURL}${endpoint}`)
       .then(() => {
         const updatedTasks = tasks.map((task) =>
-          task.id === id ? { ...task, isComplete: !isComplete } : task
+          task.id === id ? { ...task, isComplete: !isComplete } : task  //(...task) = spreads the current task’s properties into a new object
         );
         setTasks(updatedTasks);
       })
@@ -64,6 +65,17 @@ const App = () => {
       });
   };
 
+  const addTask = (taskData) => {
+    axios.post(`${kBaseURL}/tasks`, taskData) //taskData already has title, description, is_complete
+      .then((response) => {
+        const newTask = response.data.task; // Backend returns { task: {...} }
+        const newTasks = [...tasks, newTask];
+        setTasks(newTasks);  //it  creates a new array that includes all the old tasks plus the new one. (prev is the previous list of tasks.)
+      })
+      .catch((error) => {
+        console.error('Error to creating task:', error);
+      });
+  };
 
   return (
     <div className="App">
@@ -77,6 +89,7 @@ const App = () => {
             onToggleComplete={toggleTaskComplete}
             onDeleteTask={deleteTask}
           />}
+          <NewTaskForm onAddTask={addTask} />
         </div>
       </main>
     </div>
