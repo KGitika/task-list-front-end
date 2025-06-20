@@ -5,6 +5,8 @@ const NewTaskForm = ({ onPostTask }) => {
   // set up local state to track task title input
   // current text in input | updates value when user types in
   const [title, setTitle] = useState('');
+  // WAVE 6
+  // const [formData, setformData] = useState(kdefaultFormState);
 
   // called when form is submitted
   // event - browser behavior from submit
@@ -22,7 +24,7 @@ const NewTaskForm = ({ onPostTask }) => {
     // triggers POST req & updates the task list in app
     onPostTask(newTask);
 
-    // clears form - ready for a new input
+    // clears form - ready for a new input(optional)
     setTitle('');
   };
 
