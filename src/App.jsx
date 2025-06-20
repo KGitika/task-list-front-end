@@ -2,10 +2,12 @@ import TaskList from './components/TaskList.jsx';
 import './App.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import NewTaskForm from './components/NewTaskForm.jsx';
 
 const kBaseURL = 'http://127.0.0.1:5000';
 
-// converts backend task data to front end - rename
+// converts backend task data to front end, right after fetching - rename
+// is_complete = raw backend JSON
 const convertTaskFromApi = (apiTask) => {
   const { id, title, is_complete: isComplete, description } = apiTask;
   return { id, title, isComplete, description };
@@ -78,6 +80,24 @@ const App = () => {
       });
   };
 
+  // WAVE 5: ADD NEW TASK TO BACKEND AND STATE
+  // add new task by sending POST req
+  // called when NewTaskForm submits new task data
+  const postTask = (newTaskData) => {
+    axios
+      .post(`${kBaseURL}/tasks`, newTaskData)
+      .then((response) => {
+        // convert backend task response to frontend format
+        const newTask = convertTaskFromApi(response.data);
+
+        // add new task to the top (first) of current task list
+        setTasks((prevTasks) => [newTask, ...prevTasks]);
+      })
+      .catch((error) => {
+        console.error('Error posting new task:', error);
+      });
+  };
+
   // wave 3
   // // toggle completed for a task when it's clicked
   // const toggleTask = (id) => {
@@ -110,6 +130,8 @@ const App = () => {
         pass data (tasks) and actions (toggle/delete) to TaskList as props
         allows childen to request changes to state but doesn't directly chage them */}
         <TaskList tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />
+        {/* Pass postTask func to NewTaskForm so it can add new task data to app */}
+        <NewTaskForm onPostTask={postTask} />
       </main>
     </div>
   );
