@@ -1,82 +1,71 @@
 import TaskList from './components/TaskList.jsx';
 import NewTaskForm from './components/NewTaskForm.jsx';
-import './App.css';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import './App.css'; // Styling
+import { useEffect, useState } from 'react'; // React hooks
+import axios from 'axios'; // HTTP client to make API requests
 
-
-const kBaseURL='http://127.0.0.1:5000';
+const kBaseURL = 'http://127.0.0.1:5000/tasks'; // Base URL for the backend API
 
 const App = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([]); // State to store the list of tasks
 
+  // Fetch tasks from backend when component mounts
   useEffect(() => {
-    axios.get(`${kBaseURL}/tasks`)
+    axios.get(`${kBaseURL}`)
       .then((response) => {
-        setTasks(response.data);
+        setTasks(response.data); // Set tasks in state from API response
       })
       .catch((error) => {
-        console.error('Error to fetching tasks:', error);
+        console.error('Error to fetching tasks:', error); // Log error if request fails
       });
-  }, []);
+  }, []); // Empty dependency array = run once on mount
 
-  // Toggle isComplete field of a task
-  // const toggleTaskComplete = (id) => {
-  //   const updatedTasks = tasks.map((task) => {
-  //     if (task.id === id) {
-  //       return { ...task, isComplete: !task.isComplete };
-  //     }
-  //     return task;
-  //   });
-  //   setTasks(updatedTasks);
-  // };
-
+  // Toggle task completion status
   const toggleTaskComplete = (id, isComplete) => {
     const endpoint = isComplete
-      ? `/tasks/${id}/mark_incomplete`
-      : `/tasks/${id}/mark_complete`;
+      ? `/${id}/mark_incomplete` // If task is complete, use mark it incomplete endpoint
+      : `/${id}/mark_complete`; // If task is incomplete, use mark it complete endpoint
 
     axios.patch(`${kBaseURL}${endpoint}`)
       .then(() => {
+        // Update task list in state by flipping the isComplete value for this task
         const updatedTasks = tasks.map((task) =>
-          task.id === id ? { ...task, isComplete: !isComplete } : task  //(...task) = spreads the current task’s properties into a new object
+          task.id === id ? { ...task, isComplete: !isComplete } : task // Copy task and update its completion status
         );
-        setTasks(updatedTasks);
+        setTasks(updatedTasks); // Save updated task list to state
       })
       .catch((error) => {
-        console.error('Error to toggling task:', error);
+        console.error('Error to toggling task:', error); // Log error
       });
   };
 
   // Delete a task
-  // const deleteTask = (id) => {
-  //   const filteredTasks = tasks.filter((task) => task.id !== id);
-  //   setTasks(filteredTasks);
-  // };
-
   const deleteTask = (id) => {
-    axios.delete(`${kBaseURL}/tasks/${id}`)
+    axios.delete(`${kBaseURL}/${id}`)
       .then(() => {
+        // Remove the deleted task from state
         const filteredTasks = tasks.filter((task) => task.id !== id);
-        setTasks(filteredTasks);
+        setTasks(filteredTasks); // Update state
       })
       .catch((error) => {
-        console.error('Error to deleting task:', error);
+        console.error('Error to deleting task:', error); // Log error
       });
   };
 
+  // Add a new task
   const addTask = (taskData) => {
-    axios.post(`${kBaseURL}/tasks`, taskData) //taskData already has title, description, is_complete
+    axios.post(`${kBaseURL}`, taskData) // Send new task data to backend
       .then((response) => {
-        const newTask = response.data.task; // Backend returns { task: {...} }
-        const newTasks = [...tasks, newTask];
-        setTasks(newTasks);  //it  creates a new array that includes all the old tasks plus the new one. (prev is the previous list of tasks.)
+        const newTask = response.data.task; // Extract new task from backend response
+        const newTasks = [...tasks, newTask]; // Add it to the existing list
+        setTasks(newTasks); // Update state with the new list
       })
       .catch((error) => {
-        console.error('Error to creating task:', error);
+        console.error('Error to creating task:', error); // Log error
       });
   };
 
+  // Render the app
   return (
     <div className="App">
       <header className="App-header">
@@ -84,11 +73,13 @@ const App = () => {
       </header>
       <main>
         <div>
-          {<TaskList
+          {/* Show task list and pass handlers for toggling and deleting */}
+          <TaskList
             tasks={tasks}
             onToggleComplete={toggleTaskComplete}
             onDeleteTask={deleteTask}
-          />}
+          />
+          {/* Show task form and pass handler for adding new tasks */}
           <NewTaskForm onAddTask={addTask} />
         </div>
       </main>
