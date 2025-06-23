@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+
+// NEW_TASK object with empty fields. It’s used to initialize and reset the form.
 const NEW_TASK = {
   title: '',
   description: '',
@@ -10,7 +12,7 @@ const NewTaskForm = ({ onAddTask }) =>{
   const [taskData, setTaskData] = useState(NEW_TASK);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault();  // prevent page refresh
 
     onAddTask(taskData);  // call parent’s function to create the task
     console.log('Submitting task data:', taskData);
@@ -31,6 +33,17 @@ const NewTaskForm = ({ onAddTask }) =>{
           type="text"
           onChange={handleChange}
           value={taskData.title}
+          placeholder="Enter task title"
+        />
+      </div>
+      <div>
+        <input
+          id="add-description"
+          name="description"
+          type="text"
+          onChange={handleChange}
+          value={taskData.description}
+          placeholder="Enter task description"
         />
       </div>
       <input
