@@ -84,6 +84,7 @@ const App = () => {
   // add new task by sending POST req
   // called when NewTaskForm submits new task data
   const postTask = (newTaskData) => {
+    // send POST request to the backend with title + description
     axios
       .post(`${kBaseURL}/tasks`, newTaskData)
       .then((response) => {

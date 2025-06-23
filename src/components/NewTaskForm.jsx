@@ -5,8 +5,9 @@ const NewTaskForm = ({ onPostTask }) => {
   // set up local state to track task title input
   // current text in input | updates value when user types in
   const [title, setTitle] = useState('');
-  // WAVE 6
-  // const [formData, setformData] = useState(kdefaultFormState);
+  // SECOND FIELD
+  // local state to track description input
+  const [description, setDescription] = useState('');
 
   // called when form is submitted
   // event - browser behavior from submit
@@ -17,20 +18,26 @@ const NewTaskForm = ({ onPostTask }) => {
     // build a new task object w current title value from form
     const newTask = {
       title: title, // backend expects a title key
-      description: '', // optional, empty for now
+      description: description, // was optional but added 2nd field
     };
 
     // pass the newTask object to app
     // triggers POST req & updates the task list in app
     onPostTask(newTask);
 
-    // clears form - ready for a new input(optional)
+    // reset both input fields after submission
     setTitle('');
+    setDescription('');
   };
 
   // updates title state every time user types input
   const handleChange = (event) => {
     setTitle(event.target.value); // actual text typed in
+  };
+
+  // updates description state as user types
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
   };
 
   // shows text box & button to add new task
@@ -47,6 +54,18 @@ const NewTaskForm = ({ onPostTask }) => {
           value={title}
           // updates title state when user types new
           onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="input-description">Description: </label>
+        <input
+          type="text"
+          id="input-description"
+          name="description"
+          // show current description state
+          value={description}
+          // update description on typing
+          onChange={handleDescriptionChange}
         />
       </div>
       <div>
